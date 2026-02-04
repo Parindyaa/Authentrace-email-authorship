@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
-import { Shield, Mail, LayoutDashboard, Settings, Inbox, Menu, X, Search, User } from 'lucide-react';
+import { Inbox, LayoutDashboard, X } from 'lucide-react';
 import clsx from 'clsx';
 
-// Note: You will need to create these files in your components folder 
-// or I can provide simplified versions for them below.
+// Components
 import { Sidebar } from './Components/Sidebar';
 import { EmailList } from './Components/EmailList';
 import { ReadingPane } from './Components/ReadingPane';
 import { Dashboard } from './Components/Dashboard';
 import { Header } from './Components/Header';
 
+// Data
+import { mockEmails } from './Mockdata';
+
 const App = () => {
+  // 1. State Management
   const [activeNav, setActiveNav] = useState('inbox');
-  const [selectedEmailId, setSelectedEmailId] = useState(null); // Stripped TS type
+  const [selectedEmailId, setSelectedEmailId] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [viewMode, setViewMode] = useState('inbox'); // Stripped TS type
+  const [viewMode, setViewMode] = useState('inbox');
 
-  // Mock data - replace this with your actual dataset later
-  const mockEmails = [
-    { id: '1', sender: "jeff.skilling@enron.com", subject: "Q4 Strategy", body: "Check the energy targets...", status: "verified" },
-    { id: '2', sender: "phillip.allen@enron.com", subject: "Urgent Wire", body: "Process this payment...", status: "warning" },
-  ];
-
+  // 2. Selection Logic
   const selectedEmail = selectedEmailId 
     ? mockEmails.find(e => e.id === selectedEmailId) || null 
     : null;
@@ -64,7 +62,6 @@ const App = () => {
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span className="text-sm font-medium">Forensic Dashboard</span>
-                  {/* Badge for Anomaly Count */}
                   <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 rounded-full ml-1">3</span>
                 </button>
             </div>
@@ -79,10 +76,8 @@ const App = () => {
                       onSelectEmail={setSelectedEmailId}
                     />
 
-                    {/* Reading Pane / Forensic Detail Drawer */}
-
+                    {/* Sliding Reading Pane for Forensic Analysis */}
                     {selectedEmail && (
-
                       <div className="w-[60%] border-l border-gray-200 shadow-2xl z-20 absolute inset-y-0 right-0 bg-white transition-transform duration-300">
                           <div className="h-full flex flex-col">
                             <div className="flex justify-end p-2 bg-white sticky top-0 border-b border-gray-100">

@@ -3,7 +3,6 @@
 export const mockEmails = [
   { 
     id: '1', 
-    sender: "jeff.skilling@enron.com", 
     senderName: "Jeff Skilling",
     senderEmail: "jeff.skilling@enron.com",
     subject: "Q4 Strategy Update", 
@@ -17,7 +16,6 @@ export const mockEmails = [
   },
   { 
     id: '2', 
-    sender: "phillip.allen@enron.com", 
     senderName: "Phillip Allen",
     senderEmail: "phillip.allen@enron.com",
     subject: "Urgent: Wire Transfer Request", 
@@ -25,14 +23,17 @@ export const mockEmails = [
     body: "Urgent request: Please process a transfer of $450,000 to the following account details immediately for Project Raptor closure.\n\nAccount: 00982341\nBank: International Cayman Bank",
     status: "anomaly",
     riskLevel: "high",
-    riskReasons: ["Unusual Subnet (192.168.1.x)", "Stylometric mismatch detected", "High-frequency recipient"],
+    riskReasons: [
+      "Stylometric Mismatch: Digit-to-Letter ratio is 15% higher than user prototype", 
+      "Infrastructure Anomaly: Sent from an unrecognized subnet outside the corporate graph", 
+      "High-pressure financial keywords detected in a non-standard context"
+    ],
     read: false,
     starred: false,
     timestamp: "09:15 AM"
   },
   { 
     id: '3', 
-    sender: "kay.mann@enron.com", 
     senderName: "Kay Mann",
     senderEmail: "kay.mann@enron.com",
     subject: "Legal Review - Project Raptor", 
@@ -43,6 +44,40 @@ export const mockEmails = [
     read: true,
     starred: false,
     timestamp: "Yesterday"
+  },
+  { 
+    id: '4', 
+    senderName: "Kenneth Lay",
+    senderEmail: "kenneth.lay@enron.com",
+    subject: "Confidential Board Meeting Minutes", 
+    preview: "Attached are the minutes from yesterday's board meeting...",
+    body: "Attached are the minutes from yesterday's board meeting regarding the LJM partnership. This is for your eyes only and should not be shared outside of this thread.",
+    status: "warning",
+    riskLevel: "suspicious",
+    riskReasons: [
+      "Temporal Anomaly: Email sent at 3:15 AM (Statistically outside user's active profile)", 
+      "Linguistic Variance: Sentence complexity (Flesch-Kincaid) is lower than the sender's average"
+    ],
+    read: false,
+    starred: true,
+    timestamp: "Feb 03"
+  },
+  { 
+    id: '5', 
+    senderName: "Vince Kaminski",
+    senderEmail: "vince.kaminski@enron.com",
+    subject: "ML Model Deployment Error", 
+    preview: "I noticed some discrepancies in the volatility curve model...",
+    body: "I noticed some discrepancies in the volatility curve model we deployed this morning. Can we meet to discuss the variance? We need to ensure the Prototypical Network clusters are correctly aligned.",
+    status: "anomaly",
+    riskLevel: "high",
+    riskReasons: [
+      "Authorship Verification Failed: Stylometry distance exceeds threshold (D > 0.85)", 
+      "Social Graph Anomaly: First-time communication with this high-privilege recipient in this subnet"
+    ],
+    read: false,
+    starred: false,
+    timestamp: "Feb 02"
   }
 ];
 
@@ -77,8 +112,8 @@ export const dashboardStats = {
 
 export const recentAlerts = [
   { id: 1, risk: 'high', subject: 'Wire Transfer Request', reason: 'Style Mismatch', status: 'Confirmed', time: '09:15 AM' },
-  { id: 2, risk: 'suspicious', subject: 'Quarterly Review', reason: 'Subnet Anomaly', status: 'Investigating', time: '11:45 AM' },
-  { id: 3, risk: 'high', subject: 'Login from New IP', reason: 'Infrastructure', status: 'Confirmed', time: 'Yesterday' },
+  { id: 2, risk: 'suspicious', subject: 'Board Meeting Minutes', reason: 'Time Variance', status: 'Investigating', time: 'Feb 03' },
+  { id: 3, risk: 'high', subject: 'ML Model Deployment', reason: 'Identity Distance', status: 'Confirmed', time: 'Feb 02' },
 ];
 
 export const labelItems = [

@@ -8,9 +8,7 @@ import { EmailList } from './Components/EmailList';
 import { ReadingPane } from './Components/ReadingPane';
 import { Dashboard } from './Components/Dashboard';
 import { Header } from './Components/Header';
-
-// Data
-import { mockEmails } from './Mockdata';
+import { mockEmails } from './mockdata';
 
 const App = () => {
   // 1. State Management

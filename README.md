@@ -1,3 +1,9 @@
+---
+noteId: "31cfc09001a011f1bb6d15350498771e"
+tags: []
+
+---
+
 # AuthenTrace: Identity-Centric Lateral Phishing Detection
 
 **AuthenTrace** is an advanced security prototype designed to detect **Lateral Spear-Phishing** within enterprise environments. Unlike traditional filters that look for "spammy" content, AuthenTrace focuses on **Identity Verification**—determining if the sender is truly who they claim to be by analyzing their "Digital DNA."

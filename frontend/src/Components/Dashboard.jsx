@@ -11,7 +11,7 @@ import {
 import clsx from 'clsx';
 
 // Note: Ensure your mockData.js has dashboardStats and recentAlerts exports
-import { dashboardStats, recentAlerts } from '../mockData';
+import { dashboardStats, recentAlerts } from '../mockdata';
 
 export const Dashboard = () => {
   const [dateRange, setDateRange] = useState('7 days');

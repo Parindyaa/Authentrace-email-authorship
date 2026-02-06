@@ -1,61 +1,64 @@
 import React, { useMemo } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
-import { mockEmails } from "../mockdata"; //  
+import { mockEmails } from '../mockdata'; // Ensure this path is correct!
 
 const SocialGraphView = () => {
-  // Transform your email data into Nodes and Links for the graph
-const graphData = useMemo(() => {
+    const graphData = useMemo(() => {
     const nodes = [];
     const links = [];
     const uniqueUsers = new Set();
 
+    // 1. Create Nodes from your 5 Mock Emails
     mockEmails.forEach(email => {
-      // Add Sender Node
-    if (!uniqueUsers.has(email.senderEmail)) {
+        if (!uniqueUsers.has(email.senderEmail)) {
         nodes.push({ 
-
             id: email.senderEmail, 
             name: email.senderName, 
-            val: 10, 
-            color: email.riskLevel === 'high' ? '#f43f5e' : '#10b981' 
+            color: email.riskLevel === 'high' ? '#f43f5e' : '#10b981',
+          val: email.riskLevel === 'high' ? 15 : 8 // High risk nodes are bigger
         });
         uniqueUsers.add(email.senderEmail);
-
         }
-
-      // Add "Mock" link to illustrate communication
-      // In your actual thesis, you would import the 'comm_graph' JSON here
+        
+      // 2. Create connections to simulate the "Social Graph"
+      // We connect them to a central hub to force them to spread out
         links.push({ 
         source: email.senderEmail, 
-        target: "company.central@enron.com", 
-        value: 2,
-        color: email.riskLevel === 'high' ? '#f43f5e' : '#cbd5e1'
+        target: "Internal-Server-Node", 
+        color: email.riskLevel === 'high' ? '#f43f5e' : '#475569'
         });
     });
+
+    // Add a central anchor node to stabilize the visualization
+    nodes.push({ id: "Internal-Server-Node", name: "Corporate Hub", color: "#6366f1", val: 5 });
 
     return { nodes, links };
     }, []);
 
     return (
-    <div className="w-full h-full bg-slate-950 rounded-xl overflow-hidden shadow-inner border border-slate-800">
-        <div className="absolute top-4 left-4 z-10 bg-slate-900/80 p-3 rounded-lg border border-slate-700 backdrop-blur-sm">
-        <h3 className="text-white font-bold text-sm">Identity Interaction Map</h3>
-        <p className="text-slate-400 text-xs">Visualizing 23 community subnets & communication anomalies</p>
-        </div>
-
-    <ForceGraph2D
+    <div className="w-full h-[600px] bg-slate-950 rounded-xl relative">
+        <ForceGraph2D
         graphData={graphData}
         nodeLabel="name"
-        nodeColor={node => node.color}
-        linkColor={link => link.color}
-        linkWidth={link => link.value}
+        nodeAutoColorBy="group"
+        linkDirectionalParticles={2} // Adds moving dots to show "flow"
+        linkDirectionalParticleSpeed={0.005}
         backgroundColor="#020617"
-        nodeRelSize={6}
-        linkDirectionalArrowLength={3}
-        linkDirectionalArrowRelPos={1}
-    />
+        nodeCanvasObject={(node, ctx, globalScale) => {
+            const label = node.name;
+            const fontSize = 12/globalScale;
+            ctx.font = `${fontSize}px Sans-Serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = node.color;
+            ctx.beginPath(); 
+          ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false); 
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.fillText(label, node.x, node.y + node.val + 5);
+        }}
+        />
     </div>
-
     );
 };
 

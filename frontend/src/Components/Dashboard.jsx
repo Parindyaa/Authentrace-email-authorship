@@ -41,7 +41,7 @@ export const Dashboard = () => {
           <div className="flex items-center gap-2 ml-2">
             <label className="text-sm text-gray-600 font-medium">Show only flagged</label>
             <button className="w-10 h-5 rounded-full bg-gray-300 relative transition-colors hover:bg-gray-400 outline-none">
-               <div className="w-4 h-4 rounded-full bg-white shadow-sm absolute top-0.5 left-0.5 transition-transform" />
+              <div className="w-4 h-4 rounded-full bg-white shadow-sm absolute top-0.5 left-0.5 transition-transform" />
             </button>
           </div>
         </div>

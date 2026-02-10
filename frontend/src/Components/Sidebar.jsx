@@ -2,8 +2,14 @@ import React from 'react';
 import { 
   Inbox, Star, Clock, Send, File, ChevronDown, Plus 
 } from 'lucide-react';
-import { labelItems } from '../mockdata.js'; // Ensure labelItems is exported from mockdata.js
 import clsx from 'clsx';
+
+// Label items for the sidebar
+const labelItems = [
+  { label: "High Risk", color: "bg-rose-500" },
+  { label: "Verified", color: "bg-emerald-500" },
+  { label: "Internal", color: "bg-indigo-500" },
+];
 
 // Removed TypeScript Interface and React.FC type definition
 export const Sidebar = ({ activeNav, setActiveNav, isCollapsed = false }) => {

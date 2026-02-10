@@ -1,4 +1,4 @@
-// src/mockData.js
+
 
 export const mockEmails = [
   { 

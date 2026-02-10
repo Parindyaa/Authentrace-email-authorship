@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Inbox, Star, Clock, Send, File, ChevronDown, Plus 
 } from 'lucide-react';
-import { labelItems } from '../mockdata.js'; // Ensure labelItems is exported from mockData.js
+import { labelItems } from '../mockdata'; // Ensure labelItems is exported from mockdata.js
 import clsx from 'clsx';
 
 // Removed TypeScript Interface and React.FC type definition
@@ -42,8 +42,8 @@ export const Sidebar = ({ activeNav, setActiveNav, isCollapsed = false }) => {
                 onClick={() => setActiveNav(item.id)}
                 className={clsx(
                   "flex items-center gap-4 py-2 rounded-r-full transition-all outline-none",
-                   isCollapsed ? "justify-center px-0 w-10 h-10 rounded-full mx-auto" : "pl-6 pr-4 w-full",
-                   isActive 
+                    isCollapsed ? "justify-center px-0 w-10 h-10 rounded-full mx-auto" : "pl-6 pr-4 w-full",
+                    isActive 
                     ? "bg-blue-100 text-blue-800 font-bold shadow-sm" 
                     : "text-gray-600 hover:bg-gray-100"
                 )}

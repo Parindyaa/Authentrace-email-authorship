@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
-export const ReadingPane = ({ email, onClose }) => {
+export const ReadingPane = ({ email, report, isAnalyzing, error, onRunAnalysis }) => {
   // Empty state if no email is selected
   if (!email) {
     return (
@@ -97,7 +97,15 @@ export const ReadingPane = ({ email, onClose }) => {
                      </p>
 
                      {/* Forensic Indicators Grid */}
-                     <div className="flex flex-col sm:flex-row gap-6 mb-4">
+                     {/** compute reasons and score from report if available */}
+                     {
+                       (() => {
+                         const reasons = (report && (report.reasons || report.reasons)) || email.riskReasons || [];
+                         const score = (report && (typeof report.score === 'number' ? report.score : undefined)) ?? email.riskScore ?? 0;
+                         const pct = Math.min(100, Math.round((score / 5) * 100));
+
+                         return (
+                           <div className="flex flex-col sm:flex-row gap-6 mb-4">
                         {/* Risk Meter */}
                         <div className="w-full sm:w-32 flex-shrink-0">
                            <div className="text-[10px] font-bold uppercase tracking-wider mb-2 opacity-60">Identity Score</div>
@@ -107,36 +115,56 @@ export const ReadingPane = ({ email, onClose }) => {
                                 style={{ width: email.riskLevel === 'high' ? '88%' : '65%' }}
                               />
                            </div>
-                           <div className="text-right text-[10px] font-black uppercase">{email.riskLevel === 'high' ? '88% Anomaly' : '65% Anomaly'}</div>
+                           <div className="text-right text-[10px] font-black uppercase">{pct}% Anomaly</div>
                         </div>
 
                         {/* Explainable Reasons */}
                         <div className="flex-1">
                            <div className="text-[10px] font-bold uppercase tracking-wider mb-2 opacity-60">Forensic Reasons</div>
                            <ul className="space-y-1.5">
-                              {(email.riskReasons || ["Stylometric mismatch", "Unusual sending time"]).map((reason, idx) => (
-                                 <li key={idx} className="text-xs flex items-start gap-2 font-medium">
-                                    <span className={clsx("mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0", email.riskLevel === 'high' ? "bg-rose-500" : "bg-amber-500")} />
-                                    <span>{reason}</span>
-                                 </li>
+                              {(reasons.length ? reasons : ["Stylometric mismatch", "Unusual sending time"]).map((reason, idx) => (
+                                <li key={idx} className="text-xs flex items-start gap-2 font-medium">
+                                  <span className={clsx("mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0", email.riskLevel === 'high' ? "bg-rose-500" : "bg-amber-500")} />
+                                  <span>{reason}</span>
+                                </li>
                               ))}
                            </ul>
                         </div>
                      </div>
+                           );
+                          })()
+                        }
 
                      {/* Analyst Actions */}
-                     <div className="flex gap-3">
-                        <button className={clsx(
-                            "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border shadow-sm",
-                            email.riskLevel === 'high' 
-                              ? "bg-rose-600 text-white border-rose-600 hover:bg-rose-700" 
-                              : "bg-amber-600 text-white border-amber-600 hover:bg-amber-700"
-                        )}>
-                           Block Sender
-                        </button>
-                        <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-700 hover:bg-gray-50 shadow-sm transition-all">
-                           Whitelist Identity
-                        </button>
+                     <div className="flex gap-3 items-center justify-between">
+                        <div className="flex gap-3">
+                          <button className={clsx(
+                              "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border shadow-sm",
+                              email.riskLevel === 'high' 
+                                ? "bg-rose-600 text-white border-rose-600 hover:bg-rose-700" 
+                                : "bg-amber-600 text-white border-amber-600 hover:bg-amber-700"
+                          )}>
+                             Block Sender
+                          </button>
+                          <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-700 hover:bg-gray-50 shadow-sm transition-all">
+                             Whitelist Identity
+                          </button>
+                        </div>
+
+                        {onRunAnalysis && (
+                          <div className="text-right">
+                            <button
+                              onClick={() => onRunAnalysis(email)}
+                              disabled={isAnalyzing}
+                              className={clsx(
+                                "px-3 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all border shadow-sm",
+                                isAnalyzing ? "bg-gray-200 text-gray-600 border-gray-200" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                              )}
+                            >
+                              {isAnalyzing ? "Analyzing..." : "Run Forensic Analysis"}
+                            </button>
+                          </div>
+                        )}
                      </div>
                   </div>
                </div>

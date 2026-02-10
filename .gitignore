@@ -1,7 +1,20 @@
+# Python virtual environments
+Backend/.venv/
+.venv/
+env/
 venv/
+ENV/
 __pycache__/
-*.pyc
-data/raw/
-data/processed/
-models/
-.ipynb_checkpoints/
+*.py[cod]
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Environment variables
+.env
+frontend/.env
+
+# Large OS files
+.DS_Store
+Thumbs.db

@@ -1,65 +1,35 @@
-import React, { useMemo } from 'react';
-import ForceGraph2D from 'react-force-graph-2d';
-import { mockEmails } from '../mockdata'; // Ensure this path is correct!
+import React from 'react';
+import socialGraphImage from './Social_Graph.png';
 
 const SocialGraphView = () => {
-    const graphData = useMemo(() => {
-    const nodes = [];
-    const links = [];
-    const uniqueUsers = new Set();
+  return (
+    <div className="flex flex-col h-full bg-white p-6 overflow-hidden">
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-gray-800">Interaction Map (Social Graph Spread)</h2>
+        <p className="text-sm text-gray-500">Visualizing community clusters and anomalous communication edges (k=2 hops).</p>
+      </div>
 
-    // 1. Create Nodes from your 5 Mock Emails
-    mockEmails.forEach(email => {
-        if (!uniqueUsers.has(email.senderEmail)) {
-        nodes.push({ 
-            id: email.senderEmail, 
-            name: email.senderName, 
-            color: email.riskLevel === 'high' ? '#f43f5e' : '#10b981',
-          val: email.riskLevel === 'high' ? 15 : 8 // High risk nodes are bigger
-        });
-        uniqueUsers.add(email.senderEmail);
-        }
-        
-      // 2. Create connections to simulate the "Social Graph"
-      // We connect them to a central hub to force them to spread out
-        links.push({ 
-        source: email.senderEmail, 
-        target: "Internal-Server-Node", 
-        color: email.riskLevel === 'high' ? '#f43f5e' : '#475569'
-        });
-    });
-
-    // Add a central anchor node to stabilize the visualization
-    nodes.push({ id: "Internal-Server-Node", name: "Corporate Hub", color: "#6366f1", val: 5 });
-
-    return { nodes, links };
-    }, []);
-
-    return (
-    <div className="w-full h-[600px] bg-slate-950 rounded-xl relative">
-        <ForceGraph2D
-        graphData={graphData}
-        nodeLabel="name"
-        nodeAutoColorBy="group"
-        linkDirectionalParticles={2} // Adds moving dots to show "flow"
-        linkDirectionalParticleSpeed={0.005}
-        backgroundColor="#020617"
-        nodeCanvasObject={(node, ctx, globalScale) => {
-            const label = node.name;
-            const fontSize = 12/globalScale;
-            ctx.font = `${fontSize}px Sans-Serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = node.color;
-            ctx.beginPath(); 
-          ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false); 
-            ctx.fill();
-            ctx.fillStyle = 'white';
-            ctx.fillText(label, node.x, node.y + node.val + 5);
-        }}
+      <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden shadow-inner">
+        <img 
+          src={socialGraphImage} 
+          alt="Trained Social Graph" 
+          className="max-w-full max-h-full object-contain p-4"
         />
+      </div>
+
+      <div className="mt-4 flex gap-6 text-xs font-medium text-gray-600">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-blue-500"></span> Node (Employee)
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-4 h-0.5 bg-gray-300"></span> Standard Communication
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-4 h-1 bg-red-500"></span> Anomalous Edge (Flagged)
+        </div>
+      </div>
     </div>
-    );
+  );
 };
 
 export default SocialGraphView;

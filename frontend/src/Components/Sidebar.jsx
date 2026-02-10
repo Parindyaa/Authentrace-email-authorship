@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Inbox, Star, Clock, Send, File, ChevronDown, Plus 
 } from 'lucide-react';
-import { labelItems } from '../mockdata'; // Ensure labelItems is exported from mockdata.js
+import { labelItems } from '../mockdata.js'; // Ensure labelItems is exported from mockdata.js
 import clsx from 'clsx';
 
 // Removed TypeScript Interface and React.FC type definition

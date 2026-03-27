@@ -7,6 +7,7 @@ import os
 import csv
 import re
 import json
+from pathlib import Path
 from itertools import islice
 from typing import Any, Dict, List, Optional
 
@@ -14,6 +15,14 @@ app = FastAPI(title="Identity Verification API")
 
 # Simple API Key Authentication
 API_KEY = os.getenv("AUTHENTRACE_API_KEY", "authentrace_secret_key_2024")
+
+# Paths are resolved relative to this file so branch clones work consistently
+BASE_DIR = Path(__file__).resolve().parent
+CSV_PATH = BASE_DIR / "artifacts" / "emails.csv"
+JSON_PATH = BASE_DIR / "artifacts" / "emails_store.json"
+
+# Safety cap for pagination
+MAX_LIMIT = 500
 
 def verify_api_key(x_api_key: str = Header(None)) -> str:
     """Verify API key from headers"""
@@ -39,13 +48,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*", "X-API-Key"],
 )
-
-# CSV path configuration
-CSV_PATH = "D:/FYP/Authentrace/Backend/artifacts/emails.csv"
-JSON_PATH = "D:/FYP/Authentrace/Backend/artifacts/authentrace_artifacts/emails_store.json"
-
-# Safety cap for pagination
-MAX_LIMIT = 500
 
 
 class VerifyRequest(BaseModel):

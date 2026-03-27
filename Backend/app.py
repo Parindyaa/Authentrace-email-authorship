@@ -6,6 +6,7 @@ from model_lib import IdentityVerifier
 import os
 import csv
 import re
+import json
 from itertools import islice
 from typing import Any, Dict, List, Optional
 
@@ -41,6 +42,7 @@ app.add_middleware(
 
 # CSV path configuration
 CSV_PATH = "D:/FYP/Authentrace/Backend/artifacts/emails.csv"
+JSON_PATH = "D:/FYP/Authentrace/Backend/artifacts/authentrace_artifacts/emails_store.json"
 
 # Safety cap for pagination
 MAX_LIMIT = 500
@@ -134,6 +136,42 @@ def _parse_name_email(value: str) -> Dict[str, str]:
             name = v
 
     return {"name": name, "email": email}
+
+
+def _normalize_json_row(row: Dict[str, Any], idx: int) -> Dict[str, Any]:
+    # JSON from emails_store may already be partially normalized.
+    sender = row.get("sender") or row.get("from") or row.get("fromEmail") or row.get("senderEmail") or ""
+    subject = row.get("subject") or row.get("Subject") or "(no subject)"
+    body = row.get("body") or row.get("content") or row.get("message") or ""
+    preview = row.get("preview") or (body[:160] + "…" if len(body) > 160 else body)
+    recipients_raw = row.get("recipients") or row.get("to") or row.get("toEmails") or ""
+    if isinstance(recipients_raw, str):
+        recipients = [r.strip() for r in recipients_raw.split(",") if r.strip()]
+    elif isinstance(recipients_raw, list):
+        recipients = [str(r).strip() for r in recipients_raw if str(r).strip()]
+    else:
+        recipients = []
+
+    timestamp = row.get("timestamp") or row.get("time") or row.get("sent_at") or row.get("date") or ""
+
+    return {
+        "id": str(row.get("id", idx)),
+        "sender": sender,
+        "senderName": row.get("senderName") or row.get("displayName") or sender,
+        "displayName": row.get("displayName") or row.get("senderName") or sender,
+        "subject": subject,
+        "preview": preview,
+        "body": body,
+        "timestamp": timestamp,
+        "time": timestamp,
+        "recipients": recipients,
+        "read": bool(row.get("read", False)),
+        "starred": bool(row.get("starred", False)),
+        "riskLevel": row.get("riskLevel") or row.get("status") or "pending",
+        "riskScore": row.get("riskScore") or (row.get("mlResult") or {}).get("score"),
+        "mlResult": row.get("mlResult") or {},
+        "raw": row,
+    }
 
 
 def _normalize_email_row(row: Dict[str, Any], idx: int) -> Dict[str, Any]:
@@ -234,8 +272,58 @@ def get_emails(
         raise HTTPException(status_code=403, detail="Invalid API key")
 
     try:
+        # Prefer JSON store when available, for offline/local use.
+        if os.path.exists(JSON_PATH):
+            with open(JSON_PATH, "r", encoding="utf-8") as f:
+                raw_json = json.load(f)
+
+            if isinstance(raw_json, dict):
+                rows = raw_json.get("emails") or raw_json.get("items") or raw_json.get("data") or []
+            elif isinstance(raw_json, list):
+                rows = raw_json
+            else:
+                rows = []
+
+            raw_slice = rows[offset : offset + limit]
+            emails = []
+            for i, row in enumerate(raw_slice):
+                normalized = _normalize_json_row(row, idx=offset + i)
+
+                # Only run ML scoring if riskLevel is missing or pending
+                if normalized.get("riskLevel") in (None, "pending", ""):
+                    try:
+                        risk_result = verifier.verify(
+                            claimed_sender=normalized.get("sender", ""),
+                            recipients=normalized.get("recipients", []),
+                            sent_at=normalized.get("timestamp", ""),
+                            body=normalized.get("body", ""),
+                            threshold=2.5,
+                        )
+
+                        score = float(risk_result.get("score", 0.0))
+                        if score >= 1.5:
+                            risk_level = "high"
+                        elif score >= 0.8:
+                            risk_level = "suspicious"
+                        else:
+                            risk_level = "safe"
+
+                        normalized["riskLevel"] = risk_level
+                        normalized["riskScore"] = score
+                        normalized["mlResult"] = risk_result
+                    except Exception as e:
+                        print(f"⚠️ Risk assessment failed for email {normalized.get('id')}: {e}")
+                        normalized["riskLevel"] = "pending"
+                        normalized["riskScore"] = 0.0
+
+                emails.append(normalized)
+
+            print(f"✅ Loaded {len(emails)} emails (offset={offset}, limit={limit}) from {JSON_PATH}")
+            return {"success": True, "limit": limit, "offset": offset, "count": len(emails), "emails": emails}
+
+        # Fallback to CSV if JSON store is missing
         if not os.path.exists(CSV_PATH):
-            raise HTTPException(status_code=404, detail=f"CSV file not found at path: {CSV_PATH}")
+            raise HTTPException(status_code=404, detail=f"No email source found (CSV: {CSV_PATH}, JSON: {JSON_PATH})")
 
         with open(CSV_PATH, "r", encoding="utf-8-sig", newline="") as f:
             reader = csv.DictReader(f)
@@ -306,8 +394,21 @@ def get_emails(
 def get_emails_count():
     """Total email row count (excluding header)."""
     try:
+        if os.path.exists(JSON_PATH):
+            with open(JSON_PATH, "r", encoding="utf-8") as f:
+                raw_json = json.load(f)
+
+            if isinstance(raw_json, dict):
+                rows = raw_json.get("emails") or raw_json.get("items") or raw_json.get("data") or []
+            elif isinstance(raw_json, list):
+                rows = raw_json
+            else:
+                rows = []
+
+            return {"success": True, "total": len(rows)}
+
         if not os.path.exists(CSV_PATH):
-            raise HTTPException(status_code=404, detail=f"CSV file not found at path: {CSV_PATH}")
+            raise HTTPException(status_code=404, detail=f"No email source found (CSV: {CSV_PATH}, JSON: {JSON_PATH})")
 
         with open(CSV_PATH, "r", encoding="utf-8-sig", newline="") as f:
             total = sum(1 for _ in f) - 1

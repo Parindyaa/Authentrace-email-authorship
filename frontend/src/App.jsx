@@ -239,7 +239,7 @@ const App = () => {
               )}
             >
               <Inbox className="w-4 h-4" />
-              <span className="text-sm font-medium">Primary</span>
+              <span className="text-sm font-medium">Live Monitored Email Feed</span>
             </button>
 
             <button
@@ -271,7 +271,7 @@ const App = () => {
               <>
                 {loadingEmails && (
                   <div className="px-4 py-2 text-sm text-gray-600 border-b border-gray-200">
-                    Loading inbox...
+                    Loading monitored feed...
                   </div>
                 )}
                 {emailsError && (

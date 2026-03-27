@@ -1,20 +1,23 @@
-# Python virtual environments
-Backend/.venv/
+# Python
 .venv/
-env/
 venv/
-ENV/
 __pycache__/
-*.py[cod]
+*.pyc
+.ipynb_checkpoints/
 
-# Node modules
-frontend/node_modules/
+# Node
 node_modules/
+dist/
+build/
 
-# Environment variables
-.env
-frontend/.env
+# Editor
+.vscode/
 
-# Large OS files
+# OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+Backend/artifacts/*.pkl
+Backend/artifacts/*.pth

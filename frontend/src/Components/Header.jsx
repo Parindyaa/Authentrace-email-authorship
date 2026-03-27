@@ -31,7 +31,7 @@ export const Header = ({ onMenuClick }) => {
           <input
             type="text"
             className="block w-full pl-12 pr-12 py-3 bg-gray-100 border-none rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-1 focus:ring-gray-200 focus:shadow-md transition-all sm:text-base"
-            placeholder="Search mail for anomalies..."
+            placeholder="Search monitored emails or threats..."
           />
           <button className="absolute inset-y-0 right-0 pr-4 flex items-center outline-none">
             <SlidersHorizontal className="h-5 w-5 text-gray-600 hover:text-gray-900 cursor-pointer" />

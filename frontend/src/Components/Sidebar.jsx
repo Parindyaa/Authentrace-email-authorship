@@ -14,11 +14,11 @@ const labelItems = [
 // Removed TypeScript Interface and React.FC type definition
 export const Sidebar = ({ activeNav, setActiveNav, isCollapsed = false }) => {
   const navItems = [
-    { icon: Inbox, label: "Inbox", id: 'inbox', count: 3 },
-    { icon: Star, label: "Starred", id: 'starred' },
-    { icon: Clock, label: "Snoozed", id: 'snoozed' },
-    { icon: Send, label: "Sent", id: 'sent' },
-    { icon: File, label: "Drafts", id: 'drafts' },
+    { icon: Inbox, label: "Monitored Feed", id: 'inbox', count: 3 },
+    { icon: Star, label: "High-Risk Alerts", id: 'starred' },
+    { icon: Clock, label: "Suspicious Queue", id: 'snoozed' },
+    { icon: Send, label: "Verified", id: 'sent' },
+    { icon: File, label: "Audit Logs", id: 'drafts' },
   ];
 
   return (
@@ -33,7 +33,7 @@ export const Sidebar = ({ activeNav, setActiveNav, isCollapsed = false }) => {
           isCollapsed ? "w-12 h-12 justify-center p-0" : "h-14 px-5 min-w-[140px]"
         )}>
           <Plus className="w-6 h-6" strokeWidth={3} />
-          {!isCollapsed && <span className="font-medium tracking-wide">Compose</span>}
+          {!isCollapsed && <span className="font-medium tracking-wide">Ingest Email</span>}
         </button>
       </div>
 
